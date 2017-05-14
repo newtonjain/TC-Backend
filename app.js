@@ -16,15 +16,6 @@ admin.initializeApp({
 var db = admin.database();
 var ref = db.ref("server/fitness");
 
-// var uri = "mongodb://kay:disrupt17@mycluster0-shard-00-00-wpeiv.mongodb.net:27017,mycluster0-shard-00-01-wpeiv.mongodb.net:27017,mycluster0-shard-00-02-wpeiv.mongodb.net:27017/admin?ssl=true&replicaSet=Mycluster0-shard-0&authSource=admin";
-// MongoClient.connect(uri, function(err, db) {
-//       if (err) throw err
-//   //db.close();
-//     app.listen(PORT, function() {
-//         console.log('listening on '+PORT)
-//     });
-// });
-
 var express = require('express')
  
 var app = express()
@@ -37,7 +28,6 @@ app.use(express.static('assets'))
 app.get('/', function(req, res) {
     res.send("It works!")
 })
-
 
 // Get user
 app.get(VERSION+'/users/:user_id', function(req, res) {
@@ -119,6 +109,8 @@ app.get(VERSION+'/users/:user_id/matches', function(req, res) {
 app.post(VERSION+'/users/:user_id/like', function(req, res) {
   var likesRef = ref.child("likes");
   // store like
+  var likerId = req.params.user_id;
+  var likedUserId = req.body.liked_user_id;
 
   // initiate like algoright
 
