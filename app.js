@@ -76,21 +76,31 @@ app.post(VERSION+'/users/:user_id/steps', (req, res) => {
     res.send(response);
 })
 
+app.post(VERSION+'/users/create', (req, res) => {
+    var usersRef = ref.child("users/"+req.body.user_id);
+    usersRef.set(req.body);
+    res.send({success: true, status: "added user"});
+
+});
+
 // get matches
 app.get(VERSION+'/users/:user_id/matches', function(req, res) {
-console.log(req.params.user_id);
+    var response = {};
     var usersRef = ref.child("users/"+req.params.user_id);
     usersRef.on("value", function(snapshot) {
 
         var currLevel = snapshot.level;
         var matchesRef = ref.child("users");
-        matchesRef.on("value",function(matchesSnapshot){
 
+        matchesRef.on("value",function(matchesSnapshot){
+            matchesSnapshot.forEach(function(matchSnapshot){
+                console.log("KEY:" + matchSnapshot.key);
+            });
         });
 
 
 
-        res.send({success:true, user: snapshot.val()})
+        //   res.send({success:true, user: snapshot.val()})
     }, function (errorObject) {
         console.log("The read failed: " + errorObject.code);
     });
