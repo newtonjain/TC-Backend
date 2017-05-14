@@ -1,4 +1,3 @@
-var MongoClient = require('mongodb').MongoClient;
 const PORT = 3000;
 const VERSION = "/api/v1"
 var admin = require("firebase-admin");
@@ -32,6 +31,7 @@ var app = express()
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
+app.use(express.static('assets'))
 
 // Get user
 app.get('/', function(req, res) {
