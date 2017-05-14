@@ -1,11 +1,13 @@
-const PORT = 3000;
-const VERSION = "/api/v1"
 var admin = require("firebase-admin");
 var bodyParser = require('body-parser');
-
 var admin = require("firebase-admin");
-
+var https = require('https');
 var serviceAccount = require("./key.json");
+
+const PORT = 3000;
+const VERSION = "/api/v1"
+const NEXMO_API_KEY = "b5f8b746"
+const NEXMO_API_SECRET = "f9abd12a"
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -31,7 +33,6 @@ app.get('/', function(req, res) {
 
 // Get user
 app.get(VERSION+'/users/:user_id', function(req, res) {
-console.log(req.params.user_id);
     var usersRef = ref.child("users/"+req.params.user_id);
     usersRef.on("value", function(snapshot) {
         console.log(snapshot.val());
@@ -108,16 +109,85 @@ app.get(VERSION+'/users/:user_id/matches', function(req, res) {
 
 app.post(VERSION+'/users/:user_id/like', function(req, res) {
   var likesRef = ref.child("likes");
-  // store like
   var likerId = req.params.user_id;
   var likedUserId = req.body.liked_user_id;
+  // var requestParams = { likerId: likerId, likedUserId: likedUserId };
+  // likesRef.push(requestParams);
 
   // initiate like algoright
+  matchLikes(likerId, likedUserId);
 
-
-  res.status(201)
-  res.send({})
+  res.status(201);
+  res.send({});
 });
+
+var matchLikes = function(likerId, likedUserId) {
+  var likerRef = ref.child("users/" + likerId);
+  var likedUserRef = ref.child("users/" + likedUserId);
+
+  likerRef.on("value", function(likerSnapshot) {
+    likedUserRef.on("value", function(likedUserSnapshot) {
+      notifyUsers(likerSnapshot.val(), likedUserSnapshot.val());
+    }, function(errObj) {
+      console.log("read failed: " + errObj.code);
+    });
+  }, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
+  });
+};
+
+var notifyUsers = function(liker, likedUser) {
+  var likerMessageText = "Hey " +
+    liker.first_name +
+    ", you matched with " +
+    likedUser.first_name +
+    ". Here's their phone number: " +
+    likedUser.phone_number + ". Hope you make a real connection!";
+  notify(liker, likerMessageText);
+
+  var likedUserMessageText = "Hey " +
+    likedUser.first_name +
+    ", you matched with " +
+    liker.first_name +
+    ". Here's their phone number: " +
+    liker.phone_number + ". Hope you make a real connection!";
+  notify(likedUser, likedUserMessageText);
+};
+
+var notify = function(user, text) {
+  var data = JSON.stringify({
+     api_key: NEXMO_API_KEY,
+     api_secret: NEXMO_API_SECRET,
+     to: user.phone_number,
+     from: "12402240054",
+     text: text
+  });
+  var options = {
+     host: 'rest.nexmo.com',
+     path: '/sms/json',
+     port: 443,
+     method: 'POST',
+     headers: {
+       'Content-Type': 'application/json',
+       'Content-Length': Buffer.byteLength(data)
+     }
+  };
+  var req = https.request(options);
+
+  req.write(data);
+  req.end();
+
+  var responseData = '';
+  req.on('response', function(res){
+    res.on('data', function(chunk){
+      responseData += chunk;
+    });
+
+    res.on('end', function(){
+      console.log(JSON.parse(responseData));
+    });
+  });
+};
 
 var port = process.env.PORT || PORT
 app.listen(port, function() {
