@@ -68,7 +68,7 @@ app.post(VERSION+'/users/:user_id/steps', (req, res) => {
         response.level = Math.floor(req.body.steps / 1000) + 1;
         response.next_level = {
             level: response.level + 1,
-            steps_required: (1000 * (response.level + 1)),
+            steps_required: 1000 * response.level,
         }
     }
     usersRef.update({steps: req.body.steps, level: response.level});
@@ -115,6 +115,17 @@ app.get(VERSION+'/users/:user_id/matches', function(req, res) {
     });
 
 })
+
+app.post(VERSION+'/users/:user_id/like', function(req, res) {
+  var likesRef = ref.child("likes");
+  // store like
+
+  // initiate like algoright
+
+
+  res.status(201)
+  res.send({})
+});
 
 var port = process.env.PORT || PORT
 app.listen(port, function() {
