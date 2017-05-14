@@ -142,7 +142,7 @@ var notifyUsers = function(liker, likedUser) {
     ", you matched with " +
     likedUser.first_name +
     ". Here's their phone number: " +
-    likedUser.phone_number + ". Hope you make a real connection!";
+    likedUser.phone_number + ". Hope you make a real connection! Yalayuu!";
   notify(liker, likerMessageText);
 
   var likedUserMessageText = "Hey " +
@@ -150,7 +150,7 @@ var notifyUsers = function(liker, likedUser) {
     ", you matched with " +
     liker.first_name +
     ". Here's their phone number: " +
-    liker.phone_number + ". Hope you make a real connection!";
+    liker.phone_number + ". Hope you make a real connection! Yalayuu!";
   notify(likedUser, likedUserMessageText);
 };
 
