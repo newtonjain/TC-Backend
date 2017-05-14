@@ -97,6 +97,7 @@ console.log(req.params.user_id);
 
 })
 
-app.listen(PORT, function() {
-    console.log('listening on '+PORT)
+var port = process.env.PORT || PORT
+app.listen(port, function() {
+    console.log('listening on ' + port)
 });
