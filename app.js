@@ -34,7 +34,7 @@ app.get('/', function(req, res) {
 // Get user
 app.get(VERSION+'/users/:user_id', function(req, res) {
     var usersRef = ref.child("users/"+req.params.user_id);
-    usersRef.on("value", function(snapshot) {
+    usersRef.once("value", function(snapshot) {
         console.log(snapshot.val());
         res.send(snapshot.val());
     }, function (errorObject) {
@@ -81,13 +81,13 @@ app.get(VERSION+'/users/:user_id/matches', function(req, res) {
         next_level : []
     };
     var usersRef = ref.child("users/"+req.params.user_id);
-    usersRef.on("value", function(snapshot) {
+    usersRef.once("value", function(snapshot) {
 
         var currLevel = snapshot.val().level;
 
         var matchesRef = ref.child("users");
 
-        matchesRef.on("value",function(matchesSnapshot){
+        matchesRef.once("value",function(matchesSnapshot){
             matchesSnapshot.forEach(function(matchSnapshot){
                 if(matchSnapshot.key != req.params.user_id){
                     if(matchSnapshot.val().level <= currLevel){
@@ -125,8 +125,8 @@ var matchLikes = function(likerId, likedUserId) {
   var likerRef = ref.child("users/" + likerId);
   var likedUserRef = ref.child("users/" + likedUserId);
 
-  likerRef.on("value", function(likerSnapshot) {
-    likedUserRef.on("value", function(likedUserSnapshot) {
+  likerRef.once("value", function(likerSnapshot) {
+    likedUserRef.once("value", function(likedUserSnapshot) {
       notifyUsers(likerSnapshot.val(), likedUserSnapshot.val());
     }, function(errObj) {
       console.log("read failed: " + errObj.code);
