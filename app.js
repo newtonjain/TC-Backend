@@ -63,8 +63,8 @@ app.post(VERSION+'/users/:user_id/steps', (req, res) => {
         }
     }
     usersRef.update({steps: req.body.steps, level: response.level});
-   // res.status(201);
     res.send(response);
+    res.end();
 })
 
 app.post(VERSION+'/users/create', (req, res) => {
