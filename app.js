@@ -93,7 +93,7 @@ app.get(VERSION+'/users/:user_id/matches', function(req, res) {
     usersRef.on("value", function(snapshot) {
 
         var currLevel = snapshot.val().level;
-        
+
         var matchesRef = ref.child("users");
 
         matchesRef.on("value",function(matchesSnapshot){
