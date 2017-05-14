@@ -109,8 +109,6 @@ app.get(VERSION+'/users/:user_id/matches', function(req, res) {
             res.send(response);
         });
 
-
-
         //   res.send({success:true, user: snapshot.val()})
     }, function (errorObject) {
         console.log("The read failed: " + errorObject.code);
