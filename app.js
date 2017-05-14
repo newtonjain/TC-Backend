@@ -33,14 +33,19 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+// Get user
+app.get('/', function(req, res) {
+    res.send("It works!")
+})
+
 
 // Get user
-app.get('/users/:user_id', function(req, res) {
+app.get(VERSION+'/users/:user_id', function(req, res) {
 console.log(req.params.user_id);
     var usersRef = ref.child("users/"+req.params.user_id);
     usersRef.on("value", function(snapshot) {
         console.log(snapshot.val());
-        res.send({success:true, user: snapshot.val()})
+        res.send(snapshot.val());
     }, function (errorObject) {
         console.log("The read failed: " + errorObject.code);
     });
@@ -48,7 +53,7 @@ console.log(req.params.user_id);
 })
 
 // Update steps
-app.post('/users/:user_id/steps', (req, res) => {
+app.post(VERSION+'/users/:user_id/steps', (req, res) => {
     var usersRef = ref.child("users/"+req.params.user_id);
     console.log("REQ BODY:", req.body);
     var response = {}
@@ -69,6 +74,27 @@ app.post('/users/:user_id/steps', (req, res) => {
     usersRef.update({steps: req.body.steps, level: response.level});
     res.status(201);
     res.send(response);
+})
+
+// get matches
+app.get(VERSION+'/users/:user_id/matches', function(req, res) {
+console.log(req.params.user_id);
+    var usersRef = ref.child("users/"+req.params.user_id);
+    usersRef.on("value", function(snapshot) {
+
+        var currLevel = snapshot.level;
+        var matchesRef = ref.child("users");
+        matchesRef.on("value",function(matchesSnapshot){
+
+        });
+
+
+
+        res.send({success:true, user: snapshot.val()})
+    }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+    });
+
 })
 
 app.listen(PORT, function() {
