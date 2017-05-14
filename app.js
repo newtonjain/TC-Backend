@@ -85,17 +85,28 @@ app.post(VERSION+'/users/create', (req, res) => {
 
 // get matches
 app.get(VERSION+'/users/:user_id/matches', function(req, res) {
-    var response = {};
+    var response = {
+        current_level : [],
+        next_level : []
+    };
     var usersRef = ref.child("users/"+req.params.user_id);
     usersRef.on("value", function(snapshot) {
 
-        var currLevel = snapshot.level;
+        var currLevel = snapshot.val().level;
+        
         var matchesRef = ref.child("users");
 
         matchesRef.on("value",function(matchesSnapshot){
             matchesSnapshot.forEach(function(matchSnapshot){
-                console.log("KEY:" + matchSnapshot.key);
+                if(matchSnapshot.key != req.params.user_id){
+                    if(matchSnapshot.val().level <= currLevel){
+                        response.current_level.push(matchSnapshot.val())
+                    }else{
+                        response.next_level.push(matchSnapshot.val())
+                    }
+                }
             });
+            res.send(response);
         });
 
 
